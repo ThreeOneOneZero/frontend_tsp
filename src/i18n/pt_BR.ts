@@ -76,6 +76,8 @@ export const pt_BR = {
     title: "Problema do Caixeiro Viajante",
     subtitle: "Algoritmo Genético - TSP",
     description: "Resolução do PCV usando Algoritmos Genéticos",
+    autoMode: "Modo Automático",
+    manualMode: "Modo Manual",
     config: {
       title: "Configuração do Algoritmo",
       description: "Configure os parâmetros do algoritmo genético",

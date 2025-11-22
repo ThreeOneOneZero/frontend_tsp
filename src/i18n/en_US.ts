@@ -76,6 +76,8 @@ export const en_US = {
     title: "Traveling Salesman Problem",
     subtitle: "Genetic Algorithm - TSP",
     description: "TSP resolution using Genetic Algorithms",
+    autoMode: "Automatic evolution mode",
+    manualMode: "Manual evolution mode",
     config: {
       title: "Algorithm Configuration",
       description: "Configure genetic algorithm parameters",

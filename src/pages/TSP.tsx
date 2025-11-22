@@ -113,13 +113,13 @@ export const TSP: React.FC = () => {
             value="auto"
             className="px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 border-b-2 border-transparent hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:border-blue-600 dark:data-[state=active]:border-blue-400 transition-all"
           >
-            ⚡ Modo Automático
+            {t.tsp.autoMode}
           </Tabs.Trigger>
           <Tabs.Trigger
             value="manual"
             className="px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 border-b-2 border-transparent hover:text-purple-600 dark:hover:text-purple-400 hover:border-purple-600 dark:hover:border-purple-400 data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 data-[state=active]:border-purple-600 dark:data-[state=active]:border-purple-400 transition-all"
           >
-            🎮 Modo Manual (Geração por Geração)
+            {t.tsp.manualMode}
           </Tabs.Trigger>
         </Tabs.List>
 
