@@ -9,6 +9,7 @@ import { ActivityFeed } from "../components/dashboard/ActivityFeed";
 import { Products } from "./Products";
 import { Users } from "./Users";
 import { Settings } from "./Settings";
+import { TSP } from "./TSP";
 import {
   RocketIcon,
   PersonIcon,
@@ -19,9 +20,10 @@ import { useI18n } from "../i18n";
 
 export const Dashboard: React.FC = () => {
   const { translations: t } = useI18n();
-  const [activeNav, setActiveNav] = useState("dashboard");
+  const [activeNav, setActiveNav] = useState("tsp");
 
   const navItems = [
+    { label: t.tsp.subtitle, id: "tsp" },
     { label: "Dashboard", id: "dashboard" },
     { label: t.products.title, id: "options1" },
     { label: t.pages.users, id: "options2" },
@@ -37,6 +39,8 @@ export const Dashboard: React.FC = () => {
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeNav === "tsp" && <TSP />}
+
         {activeNav === "dashboard" && (
           <>
             <div className="flex items-center justify-between mb-8">
