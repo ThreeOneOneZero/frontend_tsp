@@ -3,8 +3,9 @@ import { tspApi } from "../services/tspApi";
 import type { TSPConfig, TSPResult, City } from "../types/tsp";
 import { useI18n } from "../i18n";
 import { TSPResults } from "./TSPResults";
-import { GraphInfo } from "../components/tsp";
+import { GraphInfo, ManualMode } from "../components/tsp";
 import * as Separator from "@radix-ui/react-separator";
+import * as Tabs from "@radix-ui/react-tabs";
 
 export const TSP: React.FC = () => {
   const { translations: t } = useI18n();
@@ -105,230 +106,258 @@ export const TSP: React.FC = () => {
         </div>
       </div>
 
-      {/* Formulário de Configuração */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          {t.tsp.config.title}
-        </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-          {t.tsp.config.description}
-        </p>
+      {/* Tabs: Automático vs Manual */}
+      <Tabs.Root defaultValue="auto" className="w-full">
+        <Tabs.List className="flex border-b border-gray-200 dark:border-gray-700 mb-6">
+          <Tabs.Trigger
+            value="auto"
+            className="px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 border-b-2 border-transparent hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-600 dark:hover:border-blue-400 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:border-blue-600 dark:data-[state=active]:border-blue-400 transition-all"
+          >
+            ⚡ Modo Automático
+          </Tabs.Trigger>
+          <Tabs.Trigger
+            value="manual"
+            className="px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 border-b-2 border-transparent hover:text-purple-600 dark:hover:text-purple-400 hover:border-purple-600 dark:hover:border-purple-400 data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 data-[state=active]:border-purple-600 dark:data-[state=active]:border-purple-400 transition-all"
+          >
+            🎮 Modo Manual (Geração por Geração)
+          </Tabs.Trigger>
+        </Tabs.List>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Tamanho da População */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t.tsp.config.populationSize}
-              </label>
-              <input
-                type="number"
-                value={config.populationSize}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value);
-                  if (!isNaN(value) && value >= 100) {
-                    setConfig({
-                      ...config,
-                      populationSize: value,
-                    });
-                  } else if (e.target.value === "") {
-                    setConfig({
-                      ...config,
-                      populationSize: 100,
-                    });
-                  }
-                }}
-                min="100"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {t.tsp.config.populationSizeHint}
+        {/* Modo Automático */}
+        <Tabs.Content value="auto" className="outline-none">
+          <div className="space-y-8">
+            {/* Formulário de Configuração */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                {t.tsp.config.title}
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                {t.tsp.config.description}
               </p>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Tamanho da População */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t.tsp.config.populationSize}
+                    </label>
+                    <input
+                      type="number"
+                      value={config.populationSize}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (!isNaN(value) && value >= 100) {
+                          setConfig({
+                            ...config,
+                            populationSize: value,
+                          });
+                        } else if (e.target.value === "") {
+                          setConfig({
+                            ...config,
+                            populationSize: 100,
+                          });
+                        }
+                      }}
+                      min="100"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {t.tsp.config.populationSizeHint}
+                    </p>
+                  </div>
+
+                  {/* Taxa de Cruzamento */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t.tsp.config.crossoverRate}
+                    </label>
+                    <input
+                      type="number"
+                      step="1"
+                      value={Math.round(config.crossoverRate)}
+                      onChange={(e) => {
+                        const displayValue = parseFloat(e.target.value);
+                        if (
+                          !isNaN(displayValue) &&
+                          displayValue >= 60 &&
+                          displayValue <= 80
+                        ) {
+                          setConfig({
+                            ...config,
+                            crossoverRate: displayValue,
+                          });
+                        } else if (e.target.value === "") {
+                          setConfig({
+                            ...config,
+                            crossoverRate: 0.7,
+                          });
+                        }
+                      }}
+                      min="60"
+                      max="80"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {t.tsp.config.crossoverRateHint}
+                    </p>
+                  </div>
+
+                  {/* Taxa de Mutação */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t.tsp.config.mutationRate}
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={config.mutationRate}
+                      onChange={(e) => {
+                        const displayValue = parseFloat(e.target.value);
+                        if (
+                          !isNaN(displayValue) &&
+                          displayValue >= 0.5 &&
+                          displayValue <= 1
+                        ) {
+                          setConfig({
+                            ...config,
+                            mutationRate: displayValue,
+                          });
+                        } else if (e.target.value === "") {
+                          setConfig({
+                            ...config,
+                            mutationRate: 0.008,
+                          });
+                        }
+                      }}
+                      min="0.5"
+                      max="1"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {t.tsp.config.mutationRateHint}
+                    </p>
+                  </div>
+
+                  {/* Número de Gerações */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t.tsp.config.maxGenerations}
+                    </label>
+                    <input
+                      type="number"
+                      value={config.maxGenerations}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (!isNaN(value) && value >= 20) {
+                          setConfig({
+                            ...config,
+                            maxGenerations: value,
+                          });
+                        } else if (e.target.value === "") {
+                          setConfig({
+                            ...config,
+                            maxGenerations: 100,
+                          });
+                        }
+                      }}
+                      min="20"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {t.tsp.config.maxGenerationsHint}
+                    </p>
+                  </div>
+
+                  {/* Elitismo */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t.tsp.config.elitismCount}
+                    </label>
+                    <input
+                      type="number"
+                      value={config.elitismCount}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          elitismCount: parseInt(e.target.value) || 5,
+                        })
+                      }
+                      min="1"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {t.tsp.config.elitismCountHint}
+                    </p>
+                  </div>
+
+                  {/* Cidade Inicial */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t.tsp.config.startCity}
+                    </label>
+                    <select
+                      value={config.startCityId}
+                      onChange={(e) =>
+                        setConfig({ ...config, startCityId: e.target.value })
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {cityOptions.map((cityId) => (
+                        <option key={cityId} value={cityId}>
+                          {cityId}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {t.tsp.config.startCityHint}
+                    </p>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
+                    {error}
+                  </div>
+                )}
+
+                <div className="flex gap-4">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    {loading ? t.tsp.config.running : t.tsp.config.runAlgorithm}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    disabled={loading}
+                    className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {t.tsp.config.reset}
+                  </button>
+                </div>
+              </form>
             </div>
 
-            {/* Taxa de Cruzamento */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t.tsp.config.crossoverRate}
-              </label>
-              <input
-                type="number"
-                step="1"
-                value={Math.round(config.crossoverRate)}
-                onChange={(e) => {
-                  const displayValue = parseFloat(e.target.value);
-                  if (
-                    !isNaN(displayValue) &&
-                    displayValue >= 60 &&
-                    displayValue <= 80
-                  ) {
-                    setConfig({
-                      ...config,
-                      crossoverRate: displayValue,
-                    });
-                  } else if (e.target.value === "") {
-                    setConfig({
-                      ...config,
-                      crossoverRate: 0.7,
-                    });
-                  }
-                }}
-                min="60"
-                max="80"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {t.tsp.config.crossoverRateHint}
-              </p>
-            </div>
+            <Separator.Root className="h-px bg-gray-200 dark:bg-gray-700" />
 
-            {/* Taxa de Mutação */}
+            {/* Resultados */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t.tsp.config.mutationRate}
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                value={config.mutationRate}
-                onChange={(e) => {
-                  const displayValue = parseFloat(e.target.value);
-                  if (
-                    !isNaN(displayValue) &&
-                    displayValue >= 0.5 &&
-                    displayValue <= 1
-                  ) {
-                    setConfig({
-                      ...config,
-                      mutationRate: displayValue,
-                    });
-                  } else if (e.target.value === "") {
-                    setConfig({
-                      ...config,
-                      mutationRate: 0.008,
-                    });
-                  }
-                }}
-                min="0.5"
-                max="1"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {t.tsp.config.mutationRateHint}
-              </p>
-            </div>
-
-            {/* Número de Gerações */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t.tsp.config.maxGenerations}
-              </label>
-              <input
-                type="number"
-                value={config.maxGenerations}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value);
-                  if (!isNaN(value) && value >= 20) {
-                    setConfig({
-                      ...config,
-                      maxGenerations: value,
-                    });
-                  } else if (e.target.value === "") {
-                    setConfig({
-                      ...config,
-                      maxGenerations: 100,
-                    });
-                  }
-                }}
-                min="20"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {t.tsp.config.maxGenerationsHint}
-              </p>
-            </div>
-
-            {/* Elitismo */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t.tsp.config.elitismCount}
-              </label>
-              <input
-                type="number"
-                value={config.elitismCount}
-                onChange={(e) =>
-                  setConfig({
-                    ...config,
-                    elitismCount: parseInt(e.target.value) || 5,
-                  })
-                }
-                min="1"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {t.tsp.config.elitismCountHint}
-              </p>
-            </div>
-
-            {/* Cidade Inicial */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t.tsp.config.startCity}
-              </label>
-              <select
-                value={config.startCityId}
-                onChange={(e) =>
-                  setConfig({ ...config, startCityId: e.target.value })
-                }
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {cityOptions.map((cityId) => (
-                  <option key={cityId} value={cityId}>
-                    {cityId}
-                  </option>
-                ))}
-              </select>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {t.tsp.config.startCityHint}
-              </p>
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
+                {t.tsp.results.title}
+              </h2>
+              <TSPResults result={result} cities={cities} />
             </div>
           </div>
+        </Tabs.Content>
 
-          {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
-
-          <div className="flex gap-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {loading ? t.tsp.config.running : t.tsp.config.runAlgorithm}
-            </button>
-            <button
-              type="button"
-              onClick={handleReset}
-              disabled={loading}
-              className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {t.tsp.config.reset}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <Separator.Root className="h-px bg-gray-200 dark:bg-gray-700" />
-
-      {/* Resultados */}
-      <div>
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
-          {t.tsp.results.title}
-        </h2>
-        <TSPResults result={result} cities={cities} />
-      </div>
+        {/* Modo Manual */}
+        <Tabs.Content value="manual" className="outline-none">
+          <ManualMode config={config} cities={cities} />
+        </Tabs.Content>
+      </Tabs.Root>
     </div>
   );
 };

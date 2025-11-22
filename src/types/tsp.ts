@@ -57,3 +57,21 @@ export interface ApiResponse<T> {
   data: T;
   message?: string;
 }
+
+export interface ManualSession {
+  isInitialized: boolean;
+  currentGeneration: number;
+  config: TSPConfig | null;
+}
+
+export interface InitializeResponse {
+  message: string;
+  populationSize: number;
+  generation: number;
+}
+
+export interface EvolveResponse {
+  generation: number;
+  improved: boolean;
+  bestDistance: number;
+}

@@ -134,4 +134,39 @@ export const tspApi = {
     const json: ApiResponse<RouteIndividual> = await response.json();
     return json.data;
   },
+
+  /**
+   * MODO MANUAL - Inicializa população com configuração
+   */
+  async initialize(config: TSPConfig): Promise<any> {
+    const response = await fetch(`${API_URL}/tsp/initialize`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+      body: JSON.stringify(config),
+    });
+    if (!response.ok) {
+      throw new Error("Erro ao inicializar população");
+    }
+    return response.json();
+  },
+
+  /**
+   * MODO MANUAL - Evolui uma geração
+   */
+  async evolve(): Promise<any> {
+    const response = await fetch(`${API_URL}/tsp/evolve`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Erro ao evoluir geração");
+    }
+    return response.json();
+  },
 };
