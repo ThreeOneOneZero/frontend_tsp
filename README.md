@@ -58,7 +58,7 @@ src/
 
 ## API Backend
 
-**Base URL**: `http://localhost:8080/api`
+**Base URL**: `BASE/api`
 
 | Método | Endpoint              | Descrição                   |
 | ------ | --------------------- | --------------------------- |
